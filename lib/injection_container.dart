@@ -1,4 +1,5 @@
 import 'package:aninder/feature/data/datasources/auth_local_data_source.dart';
+import 'package:aninder/feature/data/repositories/auth_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
@@ -13,7 +14,10 @@ Future<void> initGetIn() async {
   sl.registerLazySingleton(() => const FlutterSecureStorage());
 
   // Core
-  sl.registerLazySingleton(() => DioClient(storage: sl(), dio: sl()));
   sl.registerLazySingleton(() => SecureStorageService(sl()));
   sl.registerLazySingleton(() => AuthLocalDataSource(sl()));
+  sl.registerLazySingleton(() => DioClient(storage: sl(), dio: sl()));
+
+  // Repositories
+  sl.registerLazySingleton(() => AuthRepository(dioClient: sl()));
 }

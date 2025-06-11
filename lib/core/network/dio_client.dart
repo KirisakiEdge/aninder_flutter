@@ -4,14 +4,15 @@ import 'package:aninder/core/network/interceptors/auth_interceptor.dart';
 
 class DioClient {
   final Dio dio;
-  final AuthLocalDataSource storage;
+  final AuthLocalDataSource _storage;
 
-  DioClient({required this.storage, required this.dio}) {
+  DioClient({required AuthLocalDataSource storage, required this.dio})
+      : _storage = storage {
     dio
       ..options.baseUrl = 'https://anilist.co/api/v2/'
       ..options.connectTimeout = const Duration(seconds: 10)
       ..options.receiveTimeout = const Duration(seconds: 10)
-      ..interceptors.add(AuthInterceptor(storage: storage))
+      ..interceptors.add(AuthInterceptor(storage: _storage))
       ..interceptors.add(LogInterceptor(
         requestBody: true,
         responseBody: true,
