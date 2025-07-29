@@ -33,7 +33,7 @@ class _AnimeCardState extends State<AnimeCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.fromLTRB(12, 50, 12, 12),
+      margin: const EdgeInsets.all(12),
       elevation: 4,
       child: Stack(
         children: [
@@ -41,12 +41,18 @@ class _AnimeCardState extends State<AnimeCard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CachedNetworkImage(
-                  imageUrl: widget.anime.coverImage?.extraLarge ?? '',
-                  placeholder: (context, url) => const SizedBox(height: 200, child: Center(child: CircularProgressIndicator())),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                  fit: BoxFit.cover,
-                  width: double.infinity,
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                  child: CachedNetworkImage(
+                    imageUrl: widget.anime.coverImage?.extraLarge ?? '',
+                    placeholder: (context, url) => const SizedBox(
+                      height: 200,
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Padding(
@@ -168,18 +174,21 @@ class _CharacterCardState extends State<CharacterCard> {
       elevation: 4,
       child: Stack(
         children: [
-          CachedNetworkImage(
-            imageUrl: widget.char.image!.large!,
-            placeholder: (context, url) =>
-                const Center(child: CircularProgressIndicator()),
-            errorWidget: (context, url, error) => const Icon(Icons.error),
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: double.infinity,
+          ClipRRect(
+            borderRadius: const BorderRadius.all(Radius.circular(12)),
+            child: CachedNetworkImage(
+              imageUrl: widget.char.image!.large!,
+              placeholder: (context, url) =>
+              const Center(child: CircularProgressIndicator()),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+            )
           ),
           Positioned(
-            top: 4,
-            right: 4,
+            top: 0,
+            right: 0,
             child: IconButton(
               icon: Icon(
                 isCharacterFavorite ? Icons.favorite : Icons.favorite_border,
@@ -199,7 +208,7 @@ class _CharacterCardState extends State<CharacterCard> {
             left: 0,
             right: 0,
             child: Container(
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withValues(alpha: 0.6),
               padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
               child: Text(
                 widget.char.name!.full!,

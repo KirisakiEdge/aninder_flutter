@@ -51,12 +51,12 @@ class HomeViewModel extends ChangeNotifier {
 
   void goToFeedScreen(BuildContext context) {
     selectedGenres.add("Action");
-    selectedTags.add("Urban");
+    selectedTags.add("Male Protagonist");
     final extra = {
       "selectedGenres": selectedGenres,
       "selectedTags": selectedTags,
       "currentYear": currentYear
     };
-    context.go(Routes.FEED.name, extra: extra);
+    context.push(Routes.FEED.name, extra: extra);
   }
 }

@@ -1,3 +1,4 @@
+import 'package:aninder/feature/ui/elements/SwipeCard.dart';
 import 'package:flutter/material.dart';
 
 class PaginatedSwappedCards extends StatefulWidget {
@@ -22,25 +23,27 @@ class PaginatedSwappedCards extends StatefulWidget {
 
 class _PaginatedSwappedCardsState extends State<PaginatedSwappedCards> {
   late List<dynamic> mediaList;
-  int currentMedia = 1;
+  int nextItemIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    mediaList = widget.items.take(widget.buffer).toList();
-  }
+    mediaList = [];
 
-  void loadMore() {
-    if (currentMedia + 1 > mediaList.length && currentMedia < widget.items.length - 1) {
-      final nextItem = widget.items[currentMedia + 1];
-      mediaList.add(nextItem);
+    for (int i = 0; i < widget.buffer && i < widget.items.length; i++) {
+      mediaList.add(widget.items[i]);
+      nextItemIndex++;
     }
   }
 
   void handleSwipe(bool isRight, dynamic mediaItem) {
     setState(() {
-      currentMedia++;
-      loadMore();
+      mediaList.remove(mediaItem);
+
+      if (nextItemIndex < widget.items.length) {
+        mediaList.add(widget.items[nextItemIndex]);
+        nextItemIndex++;
+      }
     });
 
     if (isRight) {
@@ -53,25 +56,22 @@ class _PaginatedSwappedCardsState extends State<PaginatedSwappedCards> {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      children: mediaList.asMap().entries.map((entry) {
-        int index = entry.key;
-        var mediaItem = entry.value;
+      children: mediaList
+          .asMap()
+          .entries
+          .map((entry) {
+        final mediaItem = entry.value;
 
-        return Positioned.fill(
-          child: Draggable(
-            childWhenDragging: const SizedBox.shrink(),
-            feedback: Material(
-              color: Colors.transparent,
-              child: widget.content(mediaItem),
-            ),
-            child: widget.content(mediaItem),
-            onDragEnd: (details) {
-              bool isRight = details.offset.dx > 0;
-              handleSwipe(isRight, mediaItem);
-            },
-          ),
+        return SwipeCard(
+          key: ValueKey(mediaItem),
+          onSwipeLeft: () => handleSwipe(false, mediaItem),
+          onSwipeRight: () => handleSwipe(true, mediaItem),
+          child: widget.content(mediaItem),
         );
-      }).toList().reversed.toList(), // Top card swipes first
+      })
+          .toList()
+          .reversed
+          .toList(),
     );
   }
 }
