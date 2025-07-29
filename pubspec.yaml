@@ -47,6 +47,11 @@ dependencies:
   json_annotation: ^4.9.0
   json_serializable: ^6.9.5
   build_runner: ^2.4.15
+  graphql: ^5.2.1
+  graphql_flutter: ^5.2.0
+  flutter_hooks: ^0.20.5
+  graphql_codegen: ^1.2.4
+  flutter_html: ^3.0.0
 
 dev_dependencies:
   flutter_test:

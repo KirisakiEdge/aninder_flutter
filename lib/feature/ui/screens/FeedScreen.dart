@@ -2,22 +2,22 @@ import 'package:aninder/core/utils/NetworkMonitor.dart';
 import 'package:aninder/feature/ui/elements/FailureNetworkConnectionWidget.dart';
 import 'package:flutter/material.dart';
 
-
-import '../../data/models/Media.dart';
+import '../../../graphql/get_media_list.graphql.dart';
 import '../elements/AnimeCard.dart';
 import '../elements/PaginatedSwappedCards.dart';
+import '../viewmodels/FeedViewModel.dart';
 
 class FeedScreen extends StatefulWidget {
   final List<String> selectedGenres;
   final List<String> selectedTags;
   final int currentYear;
+  FeedViewModel viewModel = FeedViewModel();
 
-  const FeedScreen({
-    required this.selectedGenres,
-    required this.selectedTags,
-    required this.currentYear,
-    super.key
-  });
+  FeedScreen(
+      {required this.selectedGenres,
+      required this.selectedTags,
+      required this.currentYear,
+      super.key});
 
   @override
   State<FeedScreen> createState() => _FeedScreenState();
@@ -27,41 +27,32 @@ class _FeedScreenState extends State<FeedScreen> {
   NetworkMonitor networkMonitor = NetworkMonitor();
   bool isNetworkConnected = true;
 
-  final List<Media> mediaList = [];
+  List<Query$GetMediaListByYear$Page$media?> mediaList = [];
   bool isShowLoader = true;
 
   @override
   void initState() {
     super.initState();
-    networkMonitor.networkStatus.listen((status){
-      setState(() {isNetworkConnected = status;});
-    });
-/*    if (widget.viewModel.isConnected) {
-      widget.viewModel.getStatusList();
-      widget.viewModel.getMediaByYear(
-        widget.parentViewModel.currentYear,
-        widget.parentViewModel.selectedGenres,
-        widget.parentViewModel.selectedTags,
-      );
-    }
-
-    widget.viewModel.feedEventStream.listen((event) {
-      setState(() {
-        if (event is OnMediaListSet) {
-          mediaList.clear();
-          mediaList.addAll(event.mediaList);
-          isShowLoader = false;
-        } else if (event is OnMediaToListAdd) {
-          // handle accordingly
+    networkMonitor.networkStatus.listen((status) async {
+      if (status) {
+        widget.viewModel.selectYear(widget.currentYear.toString());
+        final media = await widget.viewModel.getMediaByYear(
+            widget.currentYear, widget.selectedGenres, widget.selectedTags);
+        if (media != null) {
+          setState(() {
+            mediaList = media.Page!.media!;
+            isShowLoader = true;
+          });
         }
-        // Handle other events similarly
+      }
+      setState(() {
+        isNetworkConnected = status;
       });
-    });*/
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: isNetworkConnected
           ? Stack(
@@ -83,14 +74,12 @@ class _FeedScreenState extends State<FeedScreen> {
                             setState(() {
                               isShowLoader = true;
                               mediaList.clear();
-                            /*  widget.parentViewModel.setCurrentYear(
-                                widget.parentViewModel.currentYear + 1,
-                              );
+                              widget.viewModel
+                                  .selectYear("${widget.currentYear + 1}");
                               widget.viewModel.getMediaByYear(
-                                widget.parentViewModel.currentYear,
-                                widget.parentViewModel.selectedGenres,
-                                widget.parentViewModel.selectedTags,
-                              );*/
+                                  widget.currentYear,
+                                  widget.selectedGenres,
+                                  widget.selectedTags);
                             });
                           },
                           style: OutlinedButton.styleFrom(
@@ -115,25 +104,25 @@ class _FeedScreenState extends State<FeedScreen> {
                     content: (media) => AnimeCard(
                       anime: media,
                       animeFavouriteIconClick: (id) {
-                      //  widget.viewModel.onEvent(OnMediaFavoriteChanged(media));
+                        //  widget.viewModel.onEvent(OnMediaFavoriteChanged(media));
                       },
                       charFavouriteIconClick: (id) {
-                      //  widget.viewModel.onEvent(OnCharacterFavoriteAdd(media));
+                        //  widget.viewModel.onEvent(OnCharacterFavoriteAdd(media));
                       },
                       goToAnimePageClick: (id) {
-                     //   widget.onNavigate("MEDIA/${media.id}");
+                        //   widget.onNavigate("MEDIA/${media.id}");
                       },
                     ),
                   ),
                 if (mediaList.isNotEmpty)
-                  Positioned(
+                  const Positioned(
                     bottom: 14,
                     left: 14,
                     right: 14,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Row(
+                        Row(
                           children: [
                             Icon(Icons.arrow_forward, color: Colors.white),
                             SizedBox(width: 8),
@@ -157,8 +146,7 @@ class _FeedScreenState extends State<FeedScreen> {
                   ),
               ],
             )
-          :  FailureNetworkConnectionWidget(),
+          : FailureNetworkConnectionWidget(),
     );
   }
 }
-

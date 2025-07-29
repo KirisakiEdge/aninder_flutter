@@ -9,7 +9,9 @@ import 'package:go_router/go_router.dart';
 import 'feature/ui/screens/HomeScreen.dart';
 
 void main() async {
-  await initGetIn();
+  WidgetsFlutterBinding.ensureInitialized();
+  await initGetIt();
+
   runApp(const MyApp());
 }
 

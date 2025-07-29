@@ -59,7 +59,11 @@ class _HomePageState extends State<HomeScreen> {
                         borderRadius:
                             const BorderRadius.all(Radius.circular(8)),
                         offset: const Offset(0, 60),
-                        onSelected: viewModel.selectYear,
+                        onSelected: (year) {
+                          setState(() {
+                            viewModel.selectYear(year);
+                          });
+                        },
                         itemBuilder: (BuildContext context) {
                           return viewModel.yearEntries;
                         },

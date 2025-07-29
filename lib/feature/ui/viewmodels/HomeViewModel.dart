@@ -10,8 +10,8 @@ import 'package:go_router/go_router.dart';
 class HomeViewModel extends ChangeNotifier {
   bool yearsDropdownExpanded = false;
   int _currentYear = 2000;
-  List<String> _selectedGenres = List.empty();
-  List<String> _selectedTags = List.empty();
+  List<String> _selectedGenres = [];
+  List<String> _selectedTags = [];
   final List<int> years =
       List.generate(2025 - 1990 + 1, (index) => (1990 + index));
   List<PopupMenuEntry<String>>? formattedYears;
@@ -50,6 +50,8 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   void goToFeedScreen(BuildContext context) {
+    selectedGenres.add("Action");
+    selectedTags.add("Urban");
     final extra = {
       "selectedGenres": selectedGenres,
       "selectedTags": selectedTags,

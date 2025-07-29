@@ -1,13 +1,10 @@
+import 'package:aninder/extension/media.dart';
+import 'package:aninder/graphql/get_media_list.graphql.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-// You must define these models according to your Media model:
-import '../../data/models/Character.dart';
-import '../../data/models/Media.dart';
-
-
 class AnimeCard extends StatefulWidget {
-  final Media anime;
+  final Query$GetMediaListByYear$Page$media anime;
   final Function(int) animeFavouriteIconClick;
   final Function(int) charFavouriteIconClick;
   final Function(int) goToAnimePageClick;
@@ -36,7 +33,7 @@ class _AnimeCardState extends State<AnimeCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.all(12),
+      margin: const EdgeInsets.fromLTRB(12, 50, 12, 12),
       elevation: 4,
       child: Stack(
         children: [
@@ -57,33 +54,43 @@ class _AnimeCardState extends State<AnimeCard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(widget.anime.title.userPreferred, style: Theme.of(context).textTheme.titleLarge),
-                      Text(widget.anime.title.romaji ?? widget.anime.title.english ?? '', style: Theme.of(context).textTheme.titleMedium),
+                      Text(widget.anime.title!.userPreferred!,
+                          style: Theme.of(context).textTheme.titleLarge),
+                      Text(
+                          widget.anime.title?.romaji ??
+                              widget.anime.title?.english ??
+                              '',
+                          style: Theme.of(context).textTheme.titleMedium),
                       Padding(
                         padding: const EdgeInsets.all(4),
                         child: Text(
-                          widget.anime.getFilteredDesc(),
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey),
+                          widget.anime.description!.filteredDesc,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge
+                              ?.copyWith(color: Colors.grey),
                         ),
                       ),
                     ],
                   ),
                 ),
-                if (widget.anime.characters.nodes.isNotEmpty)
+                if (widget.anime.characters!.nodes!.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: GridView.builder(
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
                         childAspectRatio: 0.6,
                         crossAxisSpacing: 8,
                         mainAxisSpacing: 8,
                       ),
-                      itemCount: widget.anime.characters.nodes.take(12).length,
+                      itemCount:
+                          widget.anime.characters!.nodes!.take(12).length,
                       itemBuilder: (context, index) {
-                        final char = widget.anime.characters.nodes[index];
+                        final char = widget.anime.characters!.nodes![index]!;
                         return CharacterCard(
                           char: char,
                           onFavouriteClick: widget.charFavouriteIconClick,
@@ -133,7 +140,7 @@ class _AnimeCardState extends State<AnimeCard> {
 }
 
 class CharacterCard extends StatefulWidget {
-  final Character char;
+  final Query$GetMediaListByYear$Page$media$characters$nodes char;
   final Function(int) onFavouriteClick;
 
   const CharacterCard({
@@ -152,7 +159,7 @@ class _CharacterCardState extends State<CharacterCard> {
   @override
   void initState() {
     super.initState();
-    isCharacterFavorite = widget.char.isFavorite;
+    isCharacterFavorite = widget.char.isFavourite;
   }
 
   @override
@@ -162,8 +169,9 @@ class _CharacterCardState extends State<CharacterCard> {
       child: Stack(
         children: [
           CachedNetworkImage(
-            imageUrl: widget.char.image.large,
-            placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+            imageUrl: widget.char.image!.large!,
+            placeholder: (context, url) =>
+                const Center(child: CircularProgressIndicator()),
             errorWidget: (context, url, error) => const Icon(Icons.error),
             fit: BoxFit.cover,
             width: double.infinity,
@@ -194,9 +202,12 @@ class _CharacterCardState extends State<CharacterCard> {
               color: Colors.black.withOpacity(0.6),
               padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
               child: Text(
-                widget.char.name.full,
+                widget.char.name!.full!,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: Colors.white),
               ),
             ),
           ),
@@ -205,4 +216,3 @@ class _CharacterCardState extends State<CharacterCard> {
     );
   }
 }
-

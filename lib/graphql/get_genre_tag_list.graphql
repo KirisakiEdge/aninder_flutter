@@ -1,0 +1,6 @@
+query Query {
+    GenreCollection
+    MediaTagCollection {
+        name
+    }
+}
