@@ -2,36 +2,19 @@ import 'package:aninder/Routes.dart';
 import 'package:aninder/feature/data/datasources/auth_local_data_source.dart';
 import 'package:aninder/feature/data/models/response/AuthResponse.dart';
 import 'package:aninder/feature/data/repositories/auth_repository.dart';
+import 'package:aninder/feature/data/repositories/general_repository.dart';
+import 'package:aninder/graphql/get_genre_tag_list.graphql.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeViewModel extends ChangeNotifier {
-  bool yearsDropdownExpanded = false;
-  int _currentYear = 2000;
-  List<String> _selectedGenres = [];
-  List<String> _selectedTags = [];
-  final List<int> years =
-      List.generate(2025 - 1990 + 1, (index) => (1990 + index));
-  List<PopupMenuEntry<String>>? formattedYears;
-
-  int get currentYear => _currentYear;
-
-  List<String> get selectedGenres => _selectedGenres;
-
-  List<String> get selectedTags => _selectedTags;
-
   AuthRepository authRepository = GetIt.instance<AuthRepository>();
+  GeneralRepository generalRepository = GetIt.instance<GeneralRepository>();
   AuthLocalDataSource dataStorage = GetIt.instance<AuthLocalDataSource>();
 
   HomeViewModel() {
-    formattedYears = years.map((year) {
-      return PopupMenuItem<String>(
-        value: year.toString(),
-        child: Text(year.toString()),
-      );
-    }).toList();
   }
 
   Future<String> getToken(String code) async {
@@ -40,22 +23,17 @@ class HomeViewModel extends ChangeNotifier {
     return dataStorage.getToken() as Future<String>;
   }
 
-  List<PopupMenuEntry<String>> get yearEntries {
-    return formattedYears!;
+  Future<Query$GetGenreAndTagLists?> getGenreList() async {
+    final response = await generalRepository.getGenreTagList();
+    return response;
   }
 
-  void selectYear(String year) {
-    _currentYear = int.parse(year);
-    notifyListeners();
-  }
-
-  void goToFeedScreen(BuildContext context) {
-    selectedGenres.add("Action");
-    selectedTags.add("Male Protagonist");
+  void goToFeedScreen(BuildContext context, int selectedYear,
+      List<String> selectedGenre, List<String> selectedTags) {
     final extra = {
-      "selectedGenres": selectedGenres,
+      "selectedGenres": selectedGenre,
       "selectedTags": selectedTags,
-      "currentYear": currentYear
+      "currentYear": selectedYear
     };
     context.push(Routes.FEED.name, extra: extra);
   }

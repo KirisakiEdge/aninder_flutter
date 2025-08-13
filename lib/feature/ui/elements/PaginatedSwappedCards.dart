@@ -60,15 +60,15 @@ class _PaginatedSwappedCardsState extends State<PaginatedSwappedCards> {
           .asMap()
           .entries
           .map((entry) {
-        final mediaItem = entry.value;
+            final mediaItem = entry.value;
 
-        return SwipeCard(
-          key: ValueKey(mediaItem),
-          onSwipeLeft: () => handleSwipe(false, mediaItem),
-          onSwipeRight: () => handleSwipe(true, mediaItem),
-          child: widget.content(mediaItem),
-        );
-      })
+            return SwipeCard(
+              key: ValueKey(mediaItem),
+              onSwipeLeft: () => handleSwipe(false, mediaItem),
+              onSwipeRight: () => handleSwipe(true, mediaItem),
+              child: widget.content(mediaItem),
+            );
+          })
           .toList()
           .reversed
           .toList(),

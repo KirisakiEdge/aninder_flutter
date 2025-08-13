@@ -17,8 +17,8 @@ class MediaRepository extends MediaRepositoryInterface {
         document: documentNodeQueryGetMediaListByYear,
         variables: Variables$Query$GetMediaListByYear(
           year: year,
-          genre_in: selectedGenres,
-          tag_in: selectedTags,
+          genre_in: selectedGenres.isEmpty ? null : selectedGenres,
+          tag_in: selectedTags.isEmpty ? null : selectedTags,
         ).toJson(),
         parserFn: (json) => Query$GetMediaListByYear.fromJson(json),
       ),

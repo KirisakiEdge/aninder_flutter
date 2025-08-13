@@ -33,9 +33,10 @@ class _AnimeCardState extends State<AnimeCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.all(12),
+      margin: const EdgeInsets.fromLTRB(12, 48, 12, 40),
       elevation: 4,
       child: Stack(
+        fit: StackFit.expand,
         children: [
           SingleChildScrollView(
             child: Column(
@@ -70,7 +71,7 @@ class _AnimeCardState extends State<AnimeCard> {
                       Padding(
                         padding: const EdgeInsets.all(4),
                         child: Text(
-                          widget.anime.description!.filteredDesc,
+                          widget.anime.description?.filteredDesc ?? "",
                           style: Theme.of(context)
                               .textTheme
                               .bodyLarge

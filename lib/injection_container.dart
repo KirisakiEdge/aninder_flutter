@@ -7,6 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'core/network/dio_client.dart';
 import 'core/storage/secure_storage_service.dart';
+import 'feature/data/repositories/general_repository.dart';
 
 final getIt = GetIt.instance;
 
@@ -24,5 +25,6 @@ Future<void> initGetIt() async {
 
   // Repositories
   getIt.registerLazySingleton(() => AuthRepository(dioClient: getIt()));
+  getIt.registerLazySingleton(() => GeneralRepository(graphQlClient: getIt()));
   getIt.registerLazySingleton(() => MediaRepository(graphQlClient: getIt()));
 }

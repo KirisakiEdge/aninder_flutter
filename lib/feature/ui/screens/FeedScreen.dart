@@ -1,5 +1,6 @@
 import 'package:aninder/core/utils/NetworkMonitor.dart';
 import 'package:aninder/feature/ui/elements/FailureNetworkConnectionWidget.dart';
+import 'package:aninder/feature/ui/elements/RowWithDropDown.dart';
 import 'package:flutter/material.dart';
 
 import '../../../graphql/get_media_list.graphql.dart';
@@ -115,25 +116,26 @@ class _FeedScreenState extends State<FeedScreen> {
                     ),
                   ),
                 if (mediaList.isNotEmpty)
-                  const Positioned(
-                    bottom: 14,
-                    left: 14,
-                    right: 14,
+                   Positioned(
+                    bottom: 45,
+                    left: 20,
+                    right: 20,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
+                        const Row(
                           children: [
                             Icon(Icons.arrow_forward, color: Colors.white),
                             SizedBox(width: 8),
-                            Text("SKIP", style: TextStyle(fontSize: 18)),
+                            Text("SKIP", style: TextStyle(fontSize: 24,fontWeight: FontWeight.w400)),
                           ],
                         ),
-                        /*RowWithDropdown(
-                          items: widget.viewModel.statusList,
+                        RowWithDropdown(
+                          items: const ["COMPLETED", "SKIP"] /*widget.viewModel.statusList*/,
                           onSelected: (selectedText) {
-                          },
-                        ),*/
+                            //TODO
+                          }
+                        ),
                       ],
                     ),
                   ),

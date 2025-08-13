@@ -20,7 +20,8 @@ class SwipeCard extends StatefulWidget {
   State<SwipeCard> createState() => _SwipeCardState();
 }
 
-class _SwipeCardState extends State<SwipeCard> with SingleTickerProviderStateMixin {
+class _SwipeCardState extends State<SwipeCard>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _animation;
   double _dragOffset = 0;
@@ -29,27 +30,33 @@ class _SwipeCardState extends State<SwipeCard> with SingleTickerProviderStateMix
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
-    _animation = Tween<Offset>(begin: Offset.zero, end: Offset.zero).animate(_controller);
+    _controller = AnimationController(
+        duration: const Duration(milliseconds: 300), vsync: this);
+    _animation = Tween<Offset>(begin: Offset.zero, end: Offset.zero)
+        .animate(_controller);
   }
 
-  void _handleDragEnd() {
+  Future<void> _handleDragEnd() async {
     if (_dragOffset > widget.swipeThreshold) {
-      _swipeOut(const Offset(2, 0));
-      widget.onSwipeRight();
+      _swipeOut(const Offset(2, 0)).then((_) {
+        widget.onSwipeRight();
+      });
     } else if (_dragOffset < -widget.swipeThreshold) {
-      _swipeOut(const Offset(-2, 0));
-      widget.onSwipeLeft();
+      _swipeOut(const Offset(-2, 0)).then((_) {
+        widget.onSwipeLeft();
+      });
     } else {
       _resetPosition();
     }
   }
 
-  void _swipeOut(Offset endOffset) {
+  Future<void> _swipeOut(Offset endOffset) async {
     setState(() => _isSwiped = true);
-    _animation = Tween<Offset>(begin: Offset(_dragOffset / MediaQuery.of(context).size.width, 0), end: endOffset)
+    _animation = Tween<Offset>(
+            begin: Offset(_dragOffset / MediaQuery.of(context).size.width, 0),
+            end: endOffset)
         .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
-    _controller.forward();
+    await _controller.forward();
   }
 
   void _resetPosition() {
@@ -81,7 +88,9 @@ class _SwipeCardState extends State<SwipeCard> with SingleTickerProviderStateMix
       child: AnimatedBuilder(
         animation: _animation,
         builder: (context, child) {
-          final offsetX = _controller.isAnimating ? _animation.value.dx * MediaQuery.of(context).size.width : _dragOffset;
+          final offsetX = _controller.isAnimating
+              ? _animation.value.dx * MediaQuery.of(context).size.width
+              : _dragOffset;
           return Transform.translate(
             offset: Offset(offsetX, 0),
             child: Transform.rotate(
