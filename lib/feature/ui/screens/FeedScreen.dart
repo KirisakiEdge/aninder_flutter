@@ -11,13 +11,13 @@ import '../viewmodels/FeedViewModel.dart';
 class FeedScreen extends StatefulWidget {
   final List<String> selectedGenres;
   final List<String> selectedTags;
-  final int currentYear;
+  final int selectedYear;
   FeedViewModel viewModel = FeedViewModel();
 
   FeedScreen(
       {required this.selectedGenres,
       required this.selectedTags,
-      required this.currentYear,
+      required this.selectedYear,
       super.key});
 
   @override
@@ -36,13 +36,13 @@ class _FeedScreenState extends State<FeedScreen> {
     super.initState();
     networkMonitor.networkStatus.listen((status) async {
       if (status) {
-        widget.viewModel.selectYear(widget.currentYear.toString());
+        widget.viewModel.selectYear(widget.selectedYear.toString());
         final media = await widget.viewModel.getMediaByYear(
-            widget.currentYear, widget.selectedGenres, widget.selectedTags);
+            widget.selectedYear, widget.selectedGenres, widget.selectedTags);
         if (media != null) {
           setState(() {
             mediaList = media.Page!.media!;
-            isShowLoader = true;
+            isShowLoader = false;
           });
         }
       }
@@ -63,8 +63,8 @@ class _FeedScreenState extends State<FeedScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          'Get list by ${widget.currentYear + 1}',
+                        Text(  //TODO fix when (currentYear + 1) like next year
+                          'Get list by ${widget.selectedYear + 1}',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 24,
@@ -76,9 +76,9 @@ class _FeedScreenState extends State<FeedScreen> {
                               isShowLoader = true;
                               mediaList.clear();
                               widget.viewModel
-                                  .selectYear("${widget.currentYear + 1}");
+                                  .selectYear("${widget.selectedYear + 1}");
                               widget.viewModel.getMediaByYear(
-                                  widget.currentYear,
+                                  widget.selectedYear,
                                   widget.selectedGenres,
                                   widget.selectedTags);
                             });
@@ -116,7 +116,7 @@ class _FeedScreenState extends State<FeedScreen> {
                     ),
                   ),
                 if (mediaList.isNotEmpty)
-                   Positioned(
+                  Positioned(
                     bottom: 45,
                     left: 20,
                     right: 20,
@@ -127,19 +127,23 @@ class _FeedScreenState extends State<FeedScreen> {
                           children: [
                             Icon(Icons.arrow_forward, color: Colors.white),
                             SizedBox(width: 8),
-                            Text("SKIP", style: TextStyle(fontSize: 24,fontWeight: FontWeight.w400)),
+                            Text("SKIP",
+                                style: TextStyle(
+                                    fontSize: 24, fontWeight: FontWeight.w400)),
                           ],
                         ),
                         RowWithDropdown(
-                          items: const ["COMPLETED", "SKIP"] /*widget.viewModel.statusList*/,
-                          onSelected: (selectedText) {
-                            //TODO
-                          }
-                        ),
+                            items: const [
+                              "COMPLETED",
+                              "SKIP"
+                            ] /*widget.viewModel.statusList*/,
+                            onSelected: (selectedText) {
+                              //TODO
+                            }),
                       ],
                     ),
                   ),
-                if (isShowLoader && mediaList.isEmpty)
+                if (isShowLoader)
                   const Center(
                     child: CircularProgressIndicator(
                       color: Colors.grey,
